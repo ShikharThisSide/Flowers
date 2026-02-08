@@ -5,11 +5,14 @@
 <title>For Mummdie 💗</title>
 
 <style>
-/* ================= RESET ================= */
 *{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif}
-body{background:#000;color:#fff;overflow:hidden}
+body{
+  background:#000;
+  color:#fff;
+  overflow:hidden;
+}
 
-/* ================= CANDLE AMBIENCE ================= */
+/* Candle glow */
 body::after{
   content:"";
   position:fixed;
@@ -17,44 +20,53 @@ body::after{
   background:radial-gradient(circle,rgba(255,180,130,.18),rgba(0,0,0,.95));
   animation:flicker 4s infinite;
   pointer-events:none;
-  z-index:1;
 }
 @keyframes flicker{0%,100%{opacity:.9}50%{opacity:1}}
 
-/* ================= INTRO ================= */
+/* INTRO */
 .intro{
   position:fixed;inset:0;
   display:flex;flex-direction:column;
-  justify-content:center;align-items:center;
+  align-items:center;justify-content:center;
   text-align:center;z-index:5;
 }
 .intro-text{
-  font-size:30px;line-height:1.5;
+  font-size:30px;
+  line-height:1.5;
   color:#ffb6c1;
-  text-shadow:0 0 12px rgba(255,182,193,.8),0 0 40px rgba(255,105,180,.5);
+  text-shadow:0 0 15px rgba(255,182,193,.9);
   animation:heartbeat 2.4s infinite;
 }
 @keyframes heartbeat{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-.options{margin-top:30px;display:flex;gap:18px;flex-wrap:wrap}
+.options{margin-top:30px;display:flex;gap:18px}
 .option-btn{
   padding:14px 30px;
   border-radius:40px;
   border:1px solid rgba(255,182,193,.6);
   background:rgba(255,182,193,.2);
-  color:#fff;font-size:16px;
-  cursor:pointer;transition:.35s;
+  color:#fff;
+  cursor:pointer;
+  transition:.35s;
 }
-.option-btn:hover{background:rgba(255,182,193,.45);transform:translateY(-4px)}
+.option-btn:hover{
+  background:rgba(255,182,193,.45);
+  transform:translateY(-4px);
+}
 
-/* ================= CANVAS ================= */
-canvas{position:fixed;inset:0;display:none;z-index:2}
-
-/* ================= CENTER FLOWER TEXT ================= */
-.center-text{
-  position:fixed;top:45%;left:50%;
-  transform:translate(-50%,-50%);
-  text-align:center;z-index:4;
+/* CANVAS */
+canvas{
+  position:fixed;
+  inset:0;
   display:none;
+}
+
+/* FLOWER TEXT */
+.center-text{
+  position:fixed;
+  top:45%;left:50%;
+  transform:translate(-50%,-50%);
+  display:none;
+  text-align:center;
 }
 .center-text h2{
   font-size:38px;
@@ -64,71 +76,66 @@ canvas{position:fixed;inset:0;display:none;z-index:2}
   animation:heartbeat 2.2s infinite;
 }
 
-/* ================= CONTROLS ================= */
+/* CONTROLS */
 .controls{
-  position:fixed;bottom:30px;left:50%;
+  position:fixed;
+  bottom:30px;left:50%;
   transform:translateX(-50%);
-  display:none;gap:16px;z-index:5;
+  display:none;
+  gap:16px;
 }
 .controls button{
-  padding:12px 22px;border:none;
+  padding:12px 22px;
+  border:none;
   border-radius:30px;
-  background:#4b5f56;color:#fff;
+  background:#4b5f56;
+  color:#fff;
   cursor:pointer;
 }
 
-/* ================= FIRELIES ================= */
-.firefly{
-  position:absolute;width:4px;height:4px;
-  background:#ffd;
-  border-radius:50%;
-  box-shadow:0 0 10px #ffd;
-  animation:fly 6s infinite alternate;
+/* PLANE */
+.plane-wrap{
+  position:fixed;
+  bottom:25%;
+  left:-350px;
+  width:320px;
+  display:none;
+  animation:fly 12s linear forwards;
 }
 @keyframes fly{
-  from{transform:translateY(0)}
-  to{transform:translateY(-80px)}
-}
-
-/* ================= CLOUDS ================= */
-.cloud{
-  position:absolute;
-  width:220px;height:80px;
-  background:rgba(255,255,255,.15);
-  border-radius:50px;
-  filter:blur(6px);
-}
-
-/* ================= PLANE ================= */
-.plane-wrap{
-  position:fixed;bottom:25%;
-  left:-400px;width:340px;
-  display:none;z-index:4;
-  animation:takeoff 10s linear forwards;
-}
-@keyframes takeoff{
-  0%{left:-400px}
-  70%{left:60%}
+  0%{left:-350px}
+  80%{left:60%}
   100%{left:70%;bottom:10%}
 }
 .plane-img{width:100%}
 .stand{
-  position:absolute;top:-150px;left:135px;
-  width:90px;height:140px;
+  position:absolute;
+  top:-150px;
+  left:135px;
+  width:90px;
+  height:140px;
   border-radius:14px;
   overflow:hidden;
   box-shadow:0 0 25px rgba(255,182,193,.8);
 }
-.stand img{width:100%;height:100%;object-fit:cover}
+.stand img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
 
-/* ================= FINAL MESSAGE ================= */
+/* FINAL MESSAGE */
 .final{
-  position:fixed;inset:0;
-  display:none;align-items:center;justify-content:center;
-  text-align:center;z-index:6;
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
 }
 .final h1{
-  font-size:36px;color:#ffb6c1;
+  font-size:36px;
+  color:#ffb6c1;
   text-shadow:0 0 15px rgba(255,182,193,.9);
 }
 </style>
@@ -139,10 +146,9 @@ canvas{position:fixed;inset:0;display:none;z-index:2}
 <!-- INTRO -->
 <div class="intro" id="intro">
   <div class="intro-text">
-    Hii mummdie 🥺<br>
-    kaisi ho?<br>
-    aaj mann kaisa hai?<br>
-    ek option choose karo 💗
+    Hii mummdie 💗<br>
+    I labuuuu chooo much<br>
+    please select one option.
   </div>
   <div class="options">
     <button class="option-btn" onclick="startFlowers()">🌸 Mera mood fresh kardo</button>
@@ -161,70 +167,72 @@ canvas{position:fixed;inset:0;display:none;z-index:2}
   <button onclick="autoBloom()">✨ Auto Bloom</button>
 </div>
 
-<!-- PLANE -->
 <div class="plane-wrap" id="planeScene">
   <img src="plane.png" class="plane-img">
   <div class="stand"><img src="mumma.png"></div>
 </div>
 
-<!-- FINAL MESSAGE -->
 <div class="final" id="final">
   <h1>Bas itna hi…<br>agar thoda sa bhi smile aayi ho,<br>toh mera kaam ho gaya 💗</h1>
 </div>
 
-<!-- MUSIC -->
-<div id="player1"></div>
-<div id="player2"></div>
+<!-- INVISIBLE YOUTUBE PLAYERS -->
+<div id="yt1" style="width:0;height:0;overflow:hidden"></div>
+<div id="yt2" style="width:0;height:0;overflow:hidden"></div>
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
 let canvas=document.getElementById("garden");
 let ctx=canvas.getContext("2d");
-canvas.width=innerWidth;canvas.height=innerHeight;
+canvas.width=innerWidth;
+canvas.height=innerHeight;
 
 let petals=[],autoI=null;
-let p1,p2,started1=false,started2=false;
+let p1,p2,played1=false,played2=false;
 
 /* MUSIC */
 function onYouTubeIframeAPIReady(){
-  p1=new YT.Player("player1",{videoId:"jJx5GJQDqZE",playerVars:{loop:1,playlist:"jJx5GJQDqZE"}});
-  p2=new YT.Player("player2",{videoId:"w0fH1j7b2bY",playerVars:{loop:1,playlist:"w0fH1j7b2bY"}});
+  p1=new YT.Player("yt1",{videoId:"jJx5GJQDqZE",playerVars:{loop:1,playlist:"jJx5GJQDqZE"}});
+  p2=new YT.Player("yt2",{videoId:"iv1Kgdf5swk",playerVars:{loop:1,playlist:"iv1Kgdf5swk"}});
 }
 
-/* FLOWER MODE */
+/* FLOWERS */
 function startFlowers(){
   intro.style.display="none";
   flowerText.style.display="block";
   controls.style.display="flex";
   canvas.style.display="block";
-  if(!started1){p1.playVideo();started1=true}
+  if(!played1){p1.playVideo();played1=true}
   loop();
 }
 
-/* FLY MODE */
+/* FLY */
 function startFly(){
   intro.style.display="none";
   planeScene.style.display="block";
-  spawnClouds();
-  spawnFireflies();
-  if(!started2){p2.playVideo();started2=true}
+  if(!played2){p2.playVideo();played2=true}
   if(navigator.vibrate)navigator.vibrate([200,100,200]);
   setTimeout(()=>{
     planeScene.style.display="none";
     final.style.display="flex";
     if(navigator.vibrate)navigator.vibrate(300);
-  },11000);
+  },12000);
 }
 
-/* FLOWERS */
+/* FLOWER DRAW */
 canvas.onclick=e=>growFlower(e.clientX,e.clientY);
 function growFlower(x,y){
-  let s=0;let color=["#ff7eb3","#ffd166","#fff"][Math.floor(Math.random()*3)];
+  let s=0;
+  let color=["#ff7eb3","#ffd166","#fff"][Math.floor(Math.random()*3)];
   function anim(){
     s+=.04;
     ctx.strokeStyle="#2e7d32";
-    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+80);ctx.stroke();
-    ctx.shadowBlur=25;ctx.shadowColor=color;
+    ctx.beginPath();
+    ctx.moveTo(x,y);
+    ctx.lineTo(x,y+80);
+    ctx.stroke();
+    ctx.shadowBlur=25;
+    ctx.shadowColor=color;
     for(let i=0;i<8;i++){
       ctx.beginPath();
       ctx.fillStyle=color;
@@ -247,7 +255,9 @@ function loop(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   petals.forEach(p=>{
     ctx.fillStyle="rgba(255,182,193,.8)";
-    ctx.beginPath();ctx.ellipse(p.x,p.y,p.s,p.s/2,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(p.x,p.y,p.s,p.s/2,0,0,Math.PI*2);
+    ctx.fill();
     p.y+=p.v;
   });
   petals=petals.filter(p=>p.y<canvas.height);
@@ -261,32 +271,14 @@ function autoBloom(){
 function clearGarden(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   petals=[];
-  clearInterval(autoI);autoI=null;
+  clearInterval(autoI);
+  autoI=null;
 }
 
-/* CLOUDS */
-function spawnClouds(){
-  for(let i=0;i<5;i++){
-    let c=document.createElement("div");
-    c.className="cloud";
-    c.style.top=Math.random()*40+"%";
-    c.style.left=Math.random()*100+"%";
-    document.body.appendChild(c);
-  }
-}
-
-/* FIREFLIES */
-function spawnFireflies(){
-  for(let i=0;i<25;i++){
-    let f=document.createElement("div");
-    f.className="firefly";
-    f.style.left=Math.random()*100+"%";
-    f.style.top=Math.random()*100+"%";
-    document.body.appendChild(f);
-  }
-}
-
-onresize=()=>{canvas.width=innerWidth;canvas.height=innerHeight};
+onresize=()=>{
+  canvas.width=innerWidth;
+  canvas.height=innerHeight;
+};
 </script>
 
 </body>
