@@ -2,162 +2,185 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>For Harshita 💗</title>
+<title>For Mummdie 💗</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif}
 body{
   background:#000;
   overflow:hidden;
   color:#fff;
 }
+
+/* Candle ambience */
 body::after{
   content:"";
   position:fixed;
   inset:0;
-  background:radial-gradient(circle,rgba(255,170,120,.08),rgba(0,0,0,.9));
+  background:radial-gradient(circle,rgba(255,180,130,.12),rgba(0,0,0,.9));
   animation:flicker 4s infinite;
   pointer-events:none;
 }
 @keyframes flicker{0%,100%{opacity:.9}50%{opacity:1}}
 
-h1{position:fixed;top:20px;left:20px;font-size:18px}
-
-.center{
-  position:fixed;
-  top:45%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  text-align:center;
-  pointer-events:none;
-}
-.center h2{
-  font-size:34px;
-  line-height:1.4;
-  background:linear-gradient(45deg,#ffb6c1,#ff5da2);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  animation:heart 2.2s infinite;
-}
-@keyframes heart{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-.center p{opacity:.75;margin-bottom:8px}
-
 canvas{position:fixed;inset:0}
 
-.controls{
+/* Center cinematic text */
+.center{
   position:fixed;
-  bottom:30px;
-  left:50%;
-  transform:translateX(-50%);
+  inset:0;
   display:flex;
-  gap:16px;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  text-align:center;
+  z-index:5;
 }
-button{
-  background:#4b5f56;
-  border:none;
+
+.glow-text{
+  font-size:32px;
+  line-height:1.4;
+  color:#ffb6c1;
+  text-shadow:
+    0 0 10px rgba(255,182,193,.6),
+    0 0 30px rgba(255,105,180,.4);
+  animation:pulse 2.2s infinite;
+}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+
+.options{
+  margin-top:25px;
+  display:flex;
+  gap:18px;
+}
+
+.option-btn{
+  background:rgba(255,182,193,.15);
+  border:1px solid rgba(255,182,193,.4);
   color:#fff;
-  padding:12px 22px;
-  border-radius:30px;
+  padding:14px 26px;
+  border-radius:40px;
+  font-size:16px;
   cursor:pointer;
+  backdrop-filter:blur(6px);
+  transition:.3s;
 }
+.option-btn:hover{
+  background:rgba(255,182,193,.35);
+  transform:translateY(-2px);
+}
+
+/* Cute doll peek */
+.doll{
+  position:fixed;
+  bottom:0;
+  right:10%;
+  width:140px;
+  height:200px;
+  background:radial-gradient(circle at top,#ffd1dc,#ff9aa2);
+  border-radius:70px 70px 30px 30px;
+  animation:peek 3s infinite;
+  z-index:3;
+}
+@keyframes peek{
+  0%,100%{transform:translateY(120px)}
+  50%{transform:translateY(0)}
+}
+.doll::before{
+  content:"";
+  position:absolute;
+  top:50px;
+  left:35px;
+  width:20px;
+  height:20px;
+  background:#000;
+  border-radius:50%;
+  box-shadow:40px 0 #000;
+}
+.doll::after{
+  content:"";
+  position:absolute;
+  top:85px;
+  left:45px;
+  width:40px;
+  height:20px;
+  border-bottom:4px solid #000;
+  border-radius:50%;
+}
+
+/* Hide garden initially */
+#gardenScene{display:none}
 </style>
 </head>
 
 <body>
 
-<h1>🕯️ Flower Garden</h1>
+<div class="center" id="intro">
+  <div class="glow-text">
+    Hii mummdie 🥺<br>
+    kaisi ho?<br>
+    achha batao…<br>
+    konsa option choose karna hai 💗
+  </div>
 
-<div class="center">
-  <p>Tap anywhere to begin</p>
-  <h2>
-    Harshita,<br>
-    these flowers are for you<br>
-    my lovely mumma 💗
-  </h2>
+  <div class="options">
+    <button class="option-btn" onclick="startGarden()">🌸 Mera mood fresh kardo</button>
+    <button class="option-btn" onclick="startGarden()">✨ Please make me feel fly</button>
+  </div>
 </div>
 
-<canvas id="c"></canvas>
+<div class="doll"></div>
 
-<div class="controls">
-  <button onclick="clearGarden()">🧹 Clear</button>
-  <button onclick="autoBloom()">✨ Auto Bloom</button>
-</div>
+<canvas id="gardenScene"></canvas>
 
+<!-- YouTube Music -->
 <div id="player" style="display:none"></div>
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
-const c=document.getElementById("c"),x=c.getContext("2d");
-c.width=innerWidth;c.height=innerHeight;
+const canvas=document.getElementById("gardenScene");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;
+canvas.height=innerHeight;
 
-let petals=[],auto=null,player,started=false;
-const flowers=[["#ff7eb3","#ff4d6d"],["#fff1a8","#ffd166"],["#fff","#eaeaea"]];
+let player,started=false,petals=[];
 
 function onYouTubeIframeAPIReady(){
-  player=new YT.Player("player",{videoId:"jJx5GJQDqZE",
+  player=new YT.Player("player",{
+    videoId:"jJx5GJQDqZE",
     playerVars:{controls:0,loop:1,playlist:"jJx5GJQDqZE"}
   });
 }
-function music(){
+function playMusic(){
   if(player&&!started){player.playVideo();started=true}
 }
 
+function startGarden(){
+  document.getElementById("intro").style.display="none";
+  playMusic();
+  canvas.style.display="block";
+  loop();
+}
+
 function petal(){
-  petals.push({x:Math.random()*c.width,y:-10,s:5+Math.random()*6,v:.5+Math.random(),d:(Math.random()-.5)*.5,r:Math.random()});
+  petals.push({x:Math.random()*canvas.width,y:-10,s:5+Math.random()*6,v:.6+Math.random(),d:(Math.random()-.5)*.4});
 }
 setInterval(petal,500);
 
-function drawPetals(){
+function loop(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
   petals.forEach(p=>{
-    x.save();
-    x.translate(p.x,p.y);
-    x.rotate(p.r);
-    x.fillStyle="rgba(255,182,193,.7)";
-    x.beginPath();
-    x.ellipse(0,0,p.s,p.s/2,0,0,Math.PI*2);
-    x.fill();
-    x.restore();
-    p.y+=p.v;p.x+=p.d;p.r+=.01;
+    ctx.fillStyle="rgba(255,182,193,.7)";
+    ctx.beginPath();
+    ctx.ellipse(p.x,p.y,p.s,p.s/2,0,0,Math.PI*2);
+    ctx.fill();
+    p.y+=p.v;p.x+=p.d;
   });
-  petals=petals.filter(p=>p.y<c.height+20);
+  petals=petals.filter(p=>p.y<canvas.height+20);
+  requestAnimationFrame(loop);
 }
 
-function flower(px,py){
-  const [a,b]=flowers[Math.floor(Math.random()*flowers.length)];
-  let s=0;
-  (function grow(){
-    s+=.04;
-    x.strokeStyle="#2e7d32";
-    x.beginPath();
-    x.moveTo(px,py);
-    x.quadraticCurveTo(px+10,py+40,px,py+80);
-    x.stroke();
-    x.shadowBlur=25;x.shadowColor=a;
-    for(let i=0;i<8;i++){
-      const g=x.createRadialGradient(px,py,2,px,py,30);
-      g.addColorStop(0,a);g.addColorStop(1,b);
-      x.fillStyle=g;
-      x.beginPath();
-      x.ellipse(px,py,12*s,26*s,(Math.PI/4)*i,0,Math.PI*2);
-      x.fill();
-    }
-    x.shadowBlur=0;
-    if(s<1)requestAnimationFrame(grow);
-  })();
-}
-
-c.onclick=e=>{music();flower(e.clientX,e.clientY)};
-function autoBloom(){
-  music();
-  if(auto)return;
-  auto=setInterval(()=>flower(Math.random()*c.width,Math.random()*c.height*.8),300);
-}
-function clearGarden(){
-  x.clearRect(0,0,c.width,c.height);
-  petals=[];clearInterval(auto);auto=null;
-}
-(function loop(){drawPetals();requestAnimationFrame(loop)})();
-onresize=()=>{c.width=innerWidth;c.height=innerHeight};
+onresize=()=>{canvas.width=innerWidth;canvas.height=innerHeight};
 </script>
 
 </body>
