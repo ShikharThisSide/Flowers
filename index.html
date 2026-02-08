@@ -55,7 +55,7 @@ canvas{
   display:none;
 }
 
-/* Flower instruction text */
+/* Flower text */
 .flower-text{
   position:fixed;
   top:40%;
@@ -135,6 +135,23 @@ canvas{
   color:#ffb6c1;
   text-shadow:0 0 15px rgba(255,182,193,.9);
 }
+
+/* Video overlay */
+.video-box{
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,0.6);
+  z-index:10;
+}
+.video-box video{
+  max-width:90%;
+  max-height:80%;
+  border-radius:16px;
+  box-shadow:0 0 40px rgba(255,182,193,.8);
+}
 </style>
 </head>
 
@@ -153,7 +170,6 @@ canvas{
   </div>
 </div>
 
-<!-- FLOWER TEXT -->
 <div class="flower-text" id="flowerText">
   <h2>Tap anywhere to grow flowers 🌸</h2>
 </div>
@@ -165,6 +181,12 @@ canvas{
   <button onclick="autoBloom()">✨ Auto Bloom</button>
 </div>
 
+<!-- VIDEO -->
+<div class="video-box" id="videoBox">
+  <video id="danceVideo" src="dance.mp4" muted playsinline></video>
+</div>
+
+<!-- PLANE -->
 <div class="plane-wrap" id="planeScene">
   <img src="plane.png" class="plane-img">
   <div class="stand"><img src="mumma.png"></div>
@@ -203,6 +225,20 @@ function startFlowers(){
   canvas.style.display="block";
   if(!played1){p1.playVideo();played1=true}
   animate();
+
+  // Play video after 5 seconds
+  setTimeout(showVideo, 5000);
+}
+
+/* VIDEO LOGIC */
+function showVideo(){
+  const box = document.getElementById("videoBox");
+  const vid = document.getElementById("danceVideo");
+  box.style.display="flex";
+  vid.play();
+  vid.onended = ()=>{
+    box.style.display="none";
+  };
 }
 
 /* START FLY */
@@ -218,7 +254,7 @@ function startFly(){
   },12000);
 }
 
-/* REALISTIC FLOWER */
+/* FLOWERS */
 canvas.onclick = e => drawFlower(e.clientX, e.clientY);
 
 function drawFlower(x,y){
@@ -255,7 +291,7 @@ function drawFlower(x,y){
   grow();
 }
 
-/* FALLING PETALS */
+/* PETALS */
 function spawnPetal(){
   fallingPetals.push({
     x:Math.random()*canvas.width,
