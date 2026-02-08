@@ -24,7 +24,8 @@ body::after{
   position:fixed;inset:0;
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
-  text-align:center;z-index:5;
+  text-align:center;
+  z-index:20;
 }
 .intro-text{
   font-size:30px;line-height:1.5;
@@ -53,6 +54,7 @@ canvas{
   position:fixed;
   inset:0;
   display:none;
+  z-index:1;
 }
 
 /* Flower text */
@@ -63,7 +65,7 @@ canvas{
   transform:translate(-50%,-50%);
   text-align:center;
   display:none;
-  z-index:4;
+  z-index:5;
 }
 .flower-text h2{
   font-size:36px;
@@ -80,6 +82,7 @@ canvas{
   transform:translateX(-50%);
   display:none;
   gap:16px;
+  z-index:5;
 }
 .controls button{
   padding:12px 22px;
@@ -90,6 +93,32 @@ canvas{
   cursor:pointer;
 }
 
+/* VIDEO – ALWAYS ON TOP */
+.video-box{
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.35);
+  z-index:100;
+}
+.video-box video{
+  width:420px;
+  max-width:90%;
+  border-radius:18px;
+  box-shadow:0 0 40px rgba(255,182,193,.9);
+}
+.video-tap{
+  position:absolute;
+  color:#ffb6c1;
+  font-size:22px;
+  text-shadow:0 0 12px rgba(255,182,193,.9);
+  cursor:pointer;
+  animation:heartbeat 1.8s infinite;
+  z-index:101;
+}
+
 /* Plane */
 .plane-wrap{
   position:fixed;
@@ -98,6 +127,7 @@ canvas{
   width:320px;
   display:none;
   animation:fly 12s linear forwards;
+  z-index:10;
 }
 @keyframes fly{
   0%{left:-350px}
@@ -129,42 +159,19 @@ canvas{
   align-items:center;
   justify-content:center;
   text-align:center;
+  z-index:20;
 }
 .final h1{
   font-size:36px;
   color:#ffb6c1;
   text-shadow:0 0 15px rgba(255,182,193,.9);
 }
-
-/* Video */
-.video-box{
-  position:fixed;
-  inset:0;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  background:rgba(0,0,0,.35);
-  z-index:8;
-}
-.video-box video{
-  width:420px;
-  max-width:90%;
-  border-radius:18px;
-  box-shadow:0 0 40px rgba(255,182,193,.9);
-}
-.video-tap{
-  position:absolute;
-  color:#ffb6c1;
-  font-size:22px;
-  text-shadow:0 0 12px rgba(255,182,193,.9);
-  cursor:pointer;
-  animation:heartbeat 1.8s infinite;
-}
 </style>
 </head>
 
 <body>
 
+<!-- INTRO -->
 <div class="intro" id="intro">
   <div class="intro-text">
     Hii mummdie 💗<br>
@@ -188,11 +195,13 @@ canvas{
   <button onclick="autoBloom()">✨ Auto Bloom</button>
 </div>
 
+<!-- VIDEO -->
 <div class="video-box" id="videoBox">
   <div class="video-tap" id="videoTap">Tap to play 💗</div>
   <video id="danceVideo" src="dance.mp4" muted playsinline></video>
 </div>
 
+<!-- PLANE -->
 <div class="plane-wrap" id="planeScene">
   <img src="plane.png" class="plane-img">
   <div class="stand"><img src="mumma.png"></div>
@@ -234,13 +243,20 @@ function showVideo(){
   const box=document.getElementById("videoBox");
   const vid=document.getElementById("danceVideo");
   const tap=document.getElementById("videoTap");
+
   box.style.display="flex";
+  canvas.style.pointerEvents="none";
+
   tap.onclick=()=>{
     tap.style.display="none";
     vid.currentTime=0;
     vid.play();
   };
-  vid.onended=()=>box.style.display="none";
+
+  vid.onended=()=>{
+    box.style.display="none";
+    canvas.style.pointerEvents="auto";
+  };
 }
 
 function startFly(){
