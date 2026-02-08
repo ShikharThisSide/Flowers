@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Flower Garden for You</title>
+<title>For Harshita 🌸</title>
 
 <style>
 *{
@@ -35,10 +35,15 @@ h1{
 }
 
 .center h2{
-  font-size:44px;
+  font-size:36px;
   background:linear-gradient(45deg,#ff9aa2,#ff5da2);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
+  line-height:1.3;
+}
+
+.center p{
+  opacity:0.8;
 }
 
 canvas{
@@ -69,12 +74,15 @@ button{
 
 <body>
 
-<h1>🌸 Flower Garden for You</h1>
+<h1>🌸 Flower Garden</h1>
 
 <div class="center">
-  <p>Click Anywhere to</p>
-  <h2>Plant Flowers</h2>
-  <span>✨ or turn on Auto Bloom</span>
+  <p>Touch anywhere</p>
+  <h2>
+    Harshita,<br>
+    these flowers are for you<br>
+    my lovely mumma 💗
+  </h2>
 </div>
 
 <canvas id="garden"></canvas>
@@ -84,32 +92,52 @@ button{
   <button id="auto">✨ Auto Bloom</button>
 </div>
 
-<!-- Background Music -->
-<audio id="music" loop>
-  <source src="https://cdn.pixabay.com/audio/2023/03/13/audio_8d5c2b36f2.mp3">
-</audio>
+<!-- Hidden YouTube Player -->
+<div id="player" style="display:none;"></div>
+
+<script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
 const canvas = document.getElementById("garden");
 const ctx = canvas.getContext("2d");
-const music = document.getElementById("music");
 
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
 const colors = ["#ff6b81","#ffd93d","#ffffff"];
 let autoBloom = null;
+let player;
 let musicStarted = false;
 
+/* YouTube Player */
+function onYouTubeIframeAPIReady(){
+  player = new YT.Player('player',{
+    videoId:'jJx5GJQDqZE',
+    playerVars:{
+      autoplay:0,
+      controls:0,
+      loop:1,
+      playlist:'jJx5GJQDqZE'
+    }
+  });
+}
+
+function startMusic(){
+  if(player && !musicStarted){
+    player.playVideo();
+    musicStarted = true;
+  }
+}
+
+/* Flower animation */
 function bloomFlower(x,y){
   const color = colors[Math.floor(Math.random()*colors.length)];
   let scale = 0;
 
   function animate(){
     scale += 0.05;
-    if(scale >= 1) scale = 1;
+    if(scale > 1) scale = 1;
 
-    // stem
     ctx.strokeStyle = "green";
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -117,11 +145,9 @@ function bloomFlower(x,y){
     ctx.lineTo(x,y+60);
     ctx.stroke();
 
-    // glow
     ctx.shadowColor = color;
     ctx.shadowBlur = 20;
 
-    // petals
     for(let i=0;i<6;i++){
       ctx.beginPath();
       ctx.fillStyle = color;
@@ -145,19 +171,13 @@ function bloomFlower(x,y){
 }
 
 canvas.addEventListener("click",e=>{
-  if(!musicStarted){
-    music.play();
-    musicStarted = true;
-  }
+  startMusic();
   bloomFlower(e.clientX,e.clientY);
 });
 
 document.getElementById("auto").onclick=()=>{
+  startMusic();
   if(autoBloom) return;
-  if(!musicStarted){
-    music.play();
-    musicStarted = true;
-  }
   autoBloom = setInterval(()=>{
     bloomFlower(
       Math.random()*canvas.width,
