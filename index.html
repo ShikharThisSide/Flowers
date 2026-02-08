@@ -6,11 +6,7 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif}
-body{
-  background:#000;
-  color:#fff;
-  overflow:hidden;
-}
+body{background:#000;color:#fff;overflow:hidden}
 
 /* Candle glow */
 body::after{
@@ -23,7 +19,7 @@ body::after{
 }
 @keyframes flicker{0%,100%{opacity:.9}50%{opacity:1}}
 
-/* INTRO */
+/* Intro */
 .intro{
   position:fixed;inset:0;
   display:flex;flex-direction:column;
@@ -31,8 +27,7 @@ body::after{
   text-align:center;z-index:5;
 }
 .intro-text{
-  font-size:30px;
-  line-height:1.5;
+  font-size:30px;line-height:1.5;
   color:#ffb6c1;
   text-shadow:0 0 15px rgba(255,182,193,.9);
   animation:heartbeat 2.4s infinite;
@@ -53,14 +48,14 @@ body::after{
   transform:translateY(-4px);
 }
 
-/* CANVAS */
+/* Canvas */
 canvas{
   position:fixed;
   inset:0;
   display:none;
 }
 
-/* FLOWER TEXT */
+/* Flower text */
 .center-text{
   position:fixed;
   top:45%;left:50%;
@@ -76,7 +71,7 @@ canvas{
   animation:heartbeat 2.2s infinite;
 }
 
-/* CONTROLS */
+/* Controls */
 .controls{
   position:fixed;
   bottom:30px;left:50%;
@@ -93,7 +88,7 @@ canvas{
   cursor:pointer;
 }
 
-/* PLANE */
+/* Plane */
 .plane-wrap{
   position:fixed;
   bottom:25%;
@@ -124,7 +119,7 @@ canvas{
   object-fit:cover;
 }
 
-/* FINAL MESSAGE */
+/* Final message */
 .final{
   position:fixed;
   inset:0;
@@ -176,98 +171,126 @@ canvas{
   <h1>Bas itna hi…<br>agar thoda sa bhi smile aayi ho,<br>toh mera kaam ho gaya 💗</h1>
 </div>
 
-<!-- INVISIBLE YOUTUBE PLAYERS -->
+<!-- Invisible YouTube players -->
 <div id="yt1" style="width:0;height:0;overflow:hidden"></div>
 <div id="yt2" style="width:0;height:0;overflow:hidden"></div>
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
-let canvas=document.getElementById("garden");
-let ctx=canvas.getContext("2d");
-canvas.width=innerWidth;
-canvas.height=innerHeight;
+const canvas = document.getElementById("garden");
+const ctx = canvas.getContext("2d");
+canvas.width = innerWidth;
+canvas.height = innerHeight;
 
-let petals=[],autoI=null;
-let p1,p2,played1=false,played2=false;
+let petals = [];
+let autoI = null;
+let p1, p2, played1 = false, played2 = false;
 
-/* MUSIC */
+/* Music */
 function onYouTubeIframeAPIReady(){
-  p1=new YT.Player("yt1",{videoId:"jJx5GJQDqZE",playerVars:{loop:1,playlist:"jJx5GJQDqZE"}});
-  p2=new YT.Player("yt2",{videoId:"iv1Kgdf5swk",playerVars:{loop:1,playlist:"iv1Kgdf5swk"}});
+  p1 = new YT.Player("yt1",{videoId:"jJx5GJQDqZE",playerVars:{loop:1,playlist:"jJx5GJQDqZE"}});
+  p2 = new YT.Player("yt2",{videoId:"iv1Kgdf5swk",playerVars:{loop:1,playlist:"iv1Kgdf5swk"}});
 }
 
-/* FLOWERS */
+/* Flower mode */
 function startFlowers(){
   intro.style.display="none";
   flowerText.style.display="block";
   controls.style.display="flex";
   canvas.style.display="block";
   if(!played1){p1.playVideo();played1=true}
+  setTimeout(()=>drawNameWithFlowers("HARSHITA"),4500);
   loop();
 }
 
-/* FLY */
+/* Fly mode */
 function startFly(){
   intro.style.display="none";
   planeScene.style.display="block";
   if(!played2){p2.playVideo();played2=true}
-  if(navigator.vibrate)navigator.vibrate([200,100,200]);
+  if(navigator.vibrate) navigator.vibrate([200,100,200]);
   setTimeout(()=>{
     planeScene.style.display="none";
     final.style.display="flex";
-    if(navigator.vibrate)navigator.vibrate(300);
+    if(navigator.vibrate) navigator.vibrate(300);
   },12000);
 }
 
-/* FLOWER DRAW */
-canvas.onclick=e=>growFlower(e.clientX,e.clientY);
+/* Grow flower */
+canvas.onclick = e => growFlower(e.clientX, e.clientY);
+
 function growFlower(x,y){
-  let s=0;
-  let color=["#ff7eb3","#ffd166","#fff"][Math.floor(Math.random()*3)];
+  let s = 0;
+  let color = ["#ff7eb3","#ffd166","#ffffff"][Math.floor(Math.random()*3)];
   function anim(){
-    s+=.04;
+    s += .04;
     ctx.strokeStyle="#2e7d32";
     ctx.beginPath();
     ctx.moveTo(x,y);
     ctx.lineTo(x,y+80);
     ctx.stroke();
-    ctx.shadowBlur=25;
-    ctx.shadowColor=color;
+    ctx.shadowBlur = 25;
+    ctx.shadowColor = color;
     for(let i=0;i<8;i++){
       ctx.beginPath();
       ctx.fillStyle=color;
       ctx.ellipse(x,y,12*s,28*s,(Math.PI/4)*i,0,Math.PI*2);
       ctx.fill();
     }
-    ctx.shadowBlur=0;
-    if(s<1)requestAnimationFrame(anim);
+    ctx.shadowBlur = 0;
+    if(s<1) requestAnimationFrame(anim);
   }
   anim();
 }
 
-/* PETALS */
+/* HARSHITA with flowers */
+function drawNameWithFlowers(text){
+  const temp = document.createElement("canvas");
+  const tctx = temp.getContext("2d");
+  temp.width = canvas.width;
+  temp.height = canvas.height;
+
+  tctx.fillStyle="#fff";
+  tctx.font="bold 140px Poppins";
+  tctx.textAlign="center";
+  tctx.fillText(text, temp.width/2, temp.height/2);
+
+  const data = tctx.getImageData(0,0,temp.width,temp.height).data;
+  for(let y=0;y<temp.height;y+=10){
+    for(let x=0;x<temp.width;x+=10){
+      const i=(y*temp.width+x)*4;
+      if(data[i]>200){
+        growFlower(x,y);
+      }
+    }
+  }
+}
+
+/* Petals (no clearing flowers) */
 function spawnPetal(){
   petals.push({x:Math.random()*canvas.width,y:-10,s:6,v:1});
 }
 setInterval(spawnPetal,500);
 
 function loop(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
   petals.forEach(p=>{
     ctx.fillStyle="rgba(255,182,193,.8)";
     ctx.beginPath();
     ctx.ellipse(p.x,p.y,p.s,p.s/2,0,0,Math.PI*2);
     ctx.fill();
-    p.y+=p.v;
+    p.y += p.v;
   });
-  petals=petals.filter(p=>p.y<canvas.height);
+  petals = petals.filter(p=>p.y<canvas.height);
   requestAnimationFrame(loop);
 }
 
 function autoBloom(){
-  if(autoI)return;
-  autoI=setInterval(()=>growFlower(Math.random()*canvas.width,Math.random()*canvas.height*.7),300);
+  if(autoI) return;
+  autoI = setInterval(()=>{
+    growFlower(Math.random()*canvas.width,Math.random()*canvas.height*.7);
+  },300);
 }
+
 function clearGarden(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   petals=[];
@@ -275,9 +298,9 @@ function clearGarden(){
   autoI=null;
 }
 
-onresize=()=>{
-  canvas.width=innerWidth;
-  canvas.height=innerHeight;
+onresize = ()=>{
+  canvas.width = innerWidth;
+  canvas.height = innerHeight;
 };
 </script>
 
