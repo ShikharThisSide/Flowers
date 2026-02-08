@@ -55,22 +55,6 @@ canvas{
   display:none;
 }
 
-/* Flower text */
-.center-text{
-  position:fixed;
-  top:45%;left:50%;
-  transform:translate(-50%,-50%);
-  display:none;
-  text-align:center;
-}
-.center-text h2{
-  font-size:38px;
-  background:linear-gradient(45deg,#ff9aa2,#ff5da2);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  animation:heartbeat 2.2s infinite;
-}
-
 /* Controls */
 .controls{
   position:fixed;
@@ -151,10 +135,6 @@ canvas{
   </div>
 </div>
 
-<div class="center-text" id="flowerText">
-  <h2>Tap anywhere to grow love 🌸</h2>
-</div>
-
 <canvas id="garden"></canvas>
 
 <div class="controls" id="controls">
@@ -182,28 +162,26 @@ const ctx = canvas.getContext("2d");
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
-let petals = [];
+let fallingPetals = [];
 let autoI = null;
 let p1, p2, played1 = false, played2 = false;
 
-/* Music */
+/* MUSIC */
 function onYouTubeIframeAPIReady(){
   p1 = new YT.Player("yt1",{videoId:"jJx5GJQDqZE",playerVars:{loop:1,playlist:"jJx5GJQDqZE"}});
   p2 = new YT.Player("yt2",{videoId:"iv1Kgdf5swk",playerVars:{loop:1,playlist:"iv1Kgdf5swk"}});
 }
 
-/* Flower mode */
+/* START FLOWERS */
 function startFlowers(){
   intro.style.display="none";
-  flowerText.style.display="block";
   controls.style.display="flex";
   canvas.style.display="block";
   if(!played1){p1.playVideo();played1=true}
-  setTimeout(()=>drawNameWithFlowers("HARSHITA"),4500);
-  loop();
+  animate();
 }
 
-/* Fly mode */
+/* START FLY */
 function startFly(){
   intro.style.display="none";
   planeScene.style.display="block";
@@ -216,91 +194,107 @@ function startFly(){
   },12000);
 }
 
-/* Grow flower */
-canvas.onclick = e => growFlower(e.clientX, e.clientY);
+/* REALISTIC FLOWER */
+canvas.onclick = e => drawFlower(e.clientX, e.clientY);
 
-function growFlower(x,y){
-  let s = 0;
-  let color = ["#ff7eb3","#ffd166","#ffffff"][Math.floor(Math.random()*3)];
-  function anim(){
-    s += .04;
+function drawFlower(x,y){
+  const petalColors = [
+    ["#ff9a9e","#fad0c4"],
+    ["#fbc2eb","#a6c1ee"],
+    ["#fff1a8","#ffd166"]
+  ];
+  const [c1,c2] = petalColors[Math.floor(Math.random()*petalColors.length)];
+  let scale = 0;
+
+  function grow(){
+    scale += 0.04;
+
+    /* stem */
     ctx.strokeStyle="#2e7d32";
+    ctx.lineWidth=2;
     ctx.beginPath();
     ctx.moveTo(x,y);
-    ctx.lineTo(x,y+80);
+    ctx.lineTo(x,y+70);
     ctx.stroke();
-    ctx.shadowBlur = 25;
-    ctx.shadowColor = color;
-    for(let i=0;i<8;i++){
+
+    /* petals */
+    for(let i=0;i<10;i++){
+      const g = ctx.createRadialGradient(x,y,2,x,y,26);
+      g.addColorStop(0,c1);
+      g.addColorStop(1,c2);
+      ctx.fillStyle=g;
       ctx.beginPath();
-      ctx.fillStyle=color;
-      ctx.ellipse(x,y,12*s,28*s,(Math.PI/4)*i,0,Math.PI*2);
+      ctx.ellipse(
+        x,
+        y,
+        10*scale,
+        24*scale,
+        (Math.PI/5)*i,
+        0,
+        Math.PI*2
+      );
       ctx.fill();
     }
-    ctx.shadowBlur = 0;
-    if(s<1) requestAnimationFrame(anim);
+
+    if(scale<1) requestAnimationFrame(grow);
   }
-  anim();
+  grow();
 }
 
-/* HARSHITA with flowers */
-function drawNameWithFlowers(text){
-  const temp = document.createElement("canvas");
-  const tctx = temp.getContext("2d");
-  temp.width = canvas.width;
-  temp.height = canvas.height;
-
-  tctx.fillStyle="#fff";
-  tctx.font="bold 140px Poppins";
-  tctx.textAlign="center";
-  tctx.fillText(text, temp.width/2, temp.height/2);
-
-  const data = tctx.getImageData(0,0,temp.width,temp.height).data;
-  for(let y=0;y<temp.height;y+=10){
-    for(let x=0;x<temp.width;x+=10){
-      const i=(y*temp.width+x)*4;
-      if(data[i]>200){
-        growFlower(x,y);
-      }
-    }
-  }
-}
-
-/* Petals (no clearing flowers) */
+/* FALLING PETALS (REAL SHAPE) */
 function spawnPetal(){
-  petals.push({x:Math.random()*canvas.width,y:-10,s:6,v:1});
+  fallingPetals.push({
+    x:Math.random()*canvas.width,
+    y:-20,
+    size:4+Math.random()*4,
+    speed:0.6+Math.random(),
+    drift:(Math.random()-0.5)*0.5,
+    rot:Math.random()*Math.PI
+  });
 }
 setInterval(spawnPetal,500);
 
-function loop(){
-  petals.forEach(p=>{
-    ctx.fillStyle="rgba(255,182,193,.8)";
+function animate(){
+  fallingPetals.forEach(p=>{
+    ctx.save();
+    ctx.translate(p.x,p.y);
+    ctx.rotate(p.rot);
+    ctx.fillStyle="rgba(255,182,193,0.8)";
     ctx.beginPath();
-    ctx.ellipse(p.x,p.y,p.s,p.s/2,0,0,Math.PI*2);
+    ctx.ellipse(0,0,p.size,p.size/1.6,0,0,Math.PI*2);
     ctx.fill();
-    p.y += p.v;
+    ctx.restore();
+
+    p.y += p.speed;
+    p.x += p.drift;
+    p.rot += 0.01;
   });
-  petals = petals.filter(p=>p.y<canvas.height);
-  requestAnimationFrame(loop);
+  fallingPetals = fallingPetals.filter(p=>p.y<canvas.height+30);
+  requestAnimationFrame(animate);
 }
 
+/* AUTO BLOOM */
 function autoBloom(){
   if(autoI) return;
   autoI = setInterval(()=>{
-    growFlower(Math.random()*canvas.width,Math.random()*canvas.height*.7);
-  },300);
+    drawFlower(
+      Math.random()*canvas.width,
+      Math.random()*canvas.height*0.7
+    );
+  },350);
 }
 
+/* CLEAR */
 function clearGarden(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  petals=[];
+  fallingPetals=[];
   clearInterval(autoI);
   autoI=null;
 }
 
-onresize = ()=>{
-  canvas.width = innerWidth;
-  canvas.height = innerHeight;
+onresize=()=>{
+  canvas.width=innerWidth;
+  canvas.height=innerHeight;
 };
 </script>
 
