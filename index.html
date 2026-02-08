@@ -5,8 +5,7 @@
 <title>For Mummdie 💗</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif}
-
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif}
 body{
   background:#000;
   overflow:hidden;
@@ -22,12 +21,8 @@ body::after{
   animation:flicker 4s infinite;
   pointer-events:none;
 }
-@keyframes flicker{
-  0%,100%{opacity:.9}
-  50%{opacity:1}
-}
+@keyframes flicker{0%,100%{opacity:.9}50%{opacity:1}}
 
-/* Intro container */
 .center{
   position:fixed;
   inset:0;
@@ -39,27 +34,16 @@ body::after{
   z-index:5;
 }
 
-/* Cinematic text */
 .glow-text{
   font-size:32px;
   line-height:1.45;
   color:#ffb6c1;
-  text-shadow:
-    0 0 10px rgba(255,182,193,.7),
-    0 0 35px rgba(255,105,180,.45);
+  text-shadow:0 0 10px rgba(255,182,193,.7),0 0 35px rgba(255,105,180,.45);
   animation:heartbeat 2.2s infinite;
 }
-@keyframes heartbeat{
-  0%,100%{transform:scale(1)}
-  50%{transform:scale(1.05)}
-}
+@keyframes heartbeat{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
 
-.options{
-  margin-top:28px;
-  display:flex;
-  gap:18px;
-}
-
+.options{margin-top:28px;display:flex;gap:18px}
 .option-btn{
   background:rgba(255,182,193,.18);
   border:1px solid rgba(255,182,193,.5);
@@ -71,36 +55,50 @@ body::after{
   backdrop-filter:blur(6px);
   transition:.35s;
 }
-.option-btn:hover{
-  background:rgba(255,182,193,.45);
-  transform:translateY(-3px);
-}
+.option-btn:hover{background:rgba(255,182,193,.45);transform:translateY(-3px)}
 
-/* REAL IMAGE PEEK */
-.peek{
-  position:fixed;
-  bottom:-40px;
-  right:8%;
-  width:220px;
-  height:300px;
-  background:url("mumma.png") center/cover no-repeat;
-  border-radius:30px;
-  box-shadow:
-    0 0 30px rgba(255,182,193,.5),
-    inset 0 -60px 60px rgba(0,0,0,.6);
-  animation:peek 3.5s infinite;
-  z-index:3;
-}
-@keyframes peek{
-  0%,100%{transform:translateY(140px)}
-  50%{transform:translateY(0)}
-}
+canvas{position:fixed;inset:0;display:none}
 
-/* Garden canvas */
-canvas{
+/* ✈️ Plane Scene */
+.plane{
   position:fixed;
-  inset:0;
+  top:40%;
+  left:-300px;
+  width:260px;
+  height:80px;
+  background:#eee;
+  border-radius:40px;
   display:none;
+  align-items:center;
+  padding-left:20px;
+  animation:fly 10s linear infinite;
+}
+@keyframes fly{
+  from{left:-300px}
+  to{left:110%}
+}
+
+/* Plane window with her photo */
+.window{
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  overflow:hidden;
+  border:4px solid #ccc;
+}
+.window img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* Petals */
+.petal{
+  position:absolute;
+  width:10px;
+  height:6px;
+  background:rgba(255,182,193,.8);
+  border-radius:50%;
 }
 </style>
 </head>
@@ -115,18 +113,22 @@ canvas{
     achha batao…<br>
     konsa option choose karna hai 💗
   </div>
-
   <div class="options">
-    <button class="option-btn" onclick="startGarden()">🌸 Mera mood fresh kardo</button>
-    <button class="option-btn" onclick="startGarden()">✨ Please make me feel fly</button>
+    <button class="option-btn" onclick="startFlowers()">🌸 Mera mood fresh kardo</button>
+    <button class="option-btn" onclick="startFly()">✨ Please make me feel fly</button>
   </div>
 </div>
 
-<div class="peek"></div>
-
 <canvas id="garden"></canvas>
 
-<!-- YouTube Music -->
+<!-- Plane -->
+<div class="plane" id="plane">
+  <div class="window">
+    <img src="mumma.png" alt="mummdie">
+  </div>
+</div>
+
+<!-- YouTube music -->
 <div id="player" style="display:none"></div>
 <script src="https://www.youtube.com/iframe_api"></script>
 
@@ -140,54 +142,50 @@ let petals=[],player,started=false;
 
 /* YouTube */
 function onYouTubeIframeAPIReady(){
-  player=new YT.Player("player",{
-    videoId:"jJx5GJQDqZE",
-    playerVars:{
-      controls:0,
-      loop:1,
-      playlist:"jJx5GJQDqZE"
-    }
+  player=new YT.Player("player",{videoId:"jJx5GJQDqZE",
+    playerVars:{controls:0,loop:1,playlist:"jJx5GJQDqZE"}
   });
 }
 function playMusic(){
-  if(player&&!started){
-    player.playVideo();
-    started=true;
-  }
+  if(player&&!started){player.playVideo();started=true}
 }
 
-/* Start garden */
-function startGarden(){
+/* 🌸 Option 1 */
+function startFlowers(){
   document.getElementById("intro").style.display="none";
-  document.querySelector(".peek").style.display="none";
   canvas.style.display="block";
   playMusic();
+  setInterval(spawnPetal,400);
   loop();
 }
 
-/* Floating petals */
+/* ✈️ Option 2 */
+function startFly(){
+  document.getElementById("intro").style.display="none";
+  document.getElementById("plane").style.display="flex";
+  playMusic();
+}
+
+/* Petals */
 function spawnPetal(){
   petals.push({
     x:Math.random()*canvas.width,
     y:-10,
-    s:5+Math.random()*7,
-    v:.6+Math.random(),
-    d:(Math.random()-.5)*.5
+    s:5+Math.random()*6,
+    v:0.6+Math.random()
   });
 }
-setInterval(spawnPetal,500);
 
 function loop(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   petals.forEach(p=>{
-    ctx.fillStyle="rgba(255,182,193,.75)";
+    ctx.fillStyle="rgba(255,182,193,.8)";
     ctx.beginPath();
     ctx.ellipse(p.x,p.y,p.s,p.s/2,0,0,Math.PI*2);
     ctx.fill();
     p.y+=p.v;
-    p.x+=p.d;
   });
-  petals=petals.filter(p=>p.y<canvas.height+30);
+  petals=petals.filter(p=>p.y<canvas.height+20);
   requestAnimationFrame(loop);
 }
 
