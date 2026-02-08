@@ -55,6 +55,24 @@ canvas{
   display:none;
 }
 
+/* Flower instruction text */
+.flower-text{
+  position:fixed;
+  top:40%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+  display:none;
+  z-index:4;
+}
+.flower-text h2{
+  font-size:36px;
+  background:linear-gradient(45deg,#ff9aa2,#ff5da2);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:heartbeat 2.2s infinite;
+}
+
 /* Controls */
 .controls{
   position:fixed;
@@ -135,6 +153,11 @@ canvas{
   </div>
 </div>
 
+<!-- FLOWER TEXT -->
+<div class="flower-text" id="flowerText">
+  <h2>Tap anywhere to grow flowers 🌸</h2>
+</div>
+
 <canvas id="garden"></canvas>
 
 <div class="controls" id="controls">
@@ -175,6 +198,7 @@ function onYouTubeIframeAPIReady(){
 /* START FLOWERS */
 function startFlowers(){
   intro.style.display="none";
+  flowerText.style.display="block";
   controls.style.display="flex";
   canvas.style.display="block";
   if(!played1){p1.playVideo();played1=true}
@@ -209,7 +233,6 @@ function drawFlower(x,y){
   function grow(){
     scale += 0.04;
 
-    /* stem */
     ctx.strokeStyle="#2e7d32";
     ctx.lineWidth=2;
     ctx.beginPath();
@@ -217,22 +240,13 @@ function drawFlower(x,y){
     ctx.lineTo(x,y+70);
     ctx.stroke();
 
-    /* petals */
     for(let i=0;i<10;i++){
       const g = ctx.createRadialGradient(x,y,2,x,y,26);
       g.addColorStop(0,c1);
       g.addColorStop(1,c2);
       ctx.fillStyle=g;
       ctx.beginPath();
-      ctx.ellipse(
-        x,
-        y,
-        10*scale,
-        24*scale,
-        (Math.PI/5)*i,
-        0,
-        Math.PI*2
-      );
+      ctx.ellipse(x,y,10*scale,24*scale,(Math.PI/5)*i,0,Math.PI*2);
       ctx.fill();
     }
 
@@ -241,7 +255,7 @@ function drawFlower(x,y){
   grow();
 }
 
-/* FALLING PETALS (REAL SHAPE) */
+/* FALLING PETALS */
 function spawnPetal(){
   fallingPetals.push({
     x:Math.random()*canvas.width,
