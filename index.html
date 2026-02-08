@@ -136,28 +136,35 @@ canvas{
   text-shadow:0 0 15px rgba(255,182,193,.9);
 }
 
-/* Video overlay */
+/* Video */
 .video-box{
   position:fixed;
   inset:0;
   display:none;
   align-items:center;
   justify-content:center;
-  background:rgba(0,0,0,0.6);
-  z-index:10;
+  background:rgba(0,0,0,.35);
+  z-index:8;
 }
 .video-box video{
+  width:420px;
   max-width:90%;
-  max-height:80%;
-  border-radius:16px;
-  box-shadow:0 0 40px rgba(255,182,193,.8);
+  border-radius:18px;
+  box-shadow:0 0 40px rgba(255,182,193,.9);
+}
+.video-tap{
+  position:absolute;
+  color:#ffb6c1;
+  font-size:22px;
+  text-shadow:0 0 12px rgba(255,182,193,.9);
+  cursor:pointer;
+  animation:heartbeat 1.8s infinite;
 }
 </style>
 </head>
 
 <body>
 
-<!-- INTRO -->
 <div class="intro" id="intro">
   <div class="intro-text">
     Hii mummdie 💗<br>
@@ -181,12 +188,11 @@ canvas{
   <button onclick="autoBloom()">✨ Auto Bloom</button>
 </div>
 
-<!-- VIDEO -->
 <div class="video-box" id="videoBox">
+  <div class="video-tap" id="videoTap">Tap to play 💗</div>
   <video id="danceVideo" src="dance.mp4" muted playsinline></video>
 </div>
 
-<!-- PLANE -->
 <div class="plane-wrap" id="planeScene">
   <img src="plane.png" class="plane-img">
   <div class="stand"><img src="mumma.png"></div>
@@ -196,28 +202,24 @@ canvas{
   <h1>Bas itna hi…<br>agar thoda sa bhi smile aayi ho,<br>toh mera kaam ho gaya 💗</h1>
 </div>
 
-<!-- Invisible YouTube players -->
-<div id="yt1" style="width:0;height:0;overflow:hidden"></div>
-<div id="yt2" style="width:0;height:0;overflow:hidden"></div>
+<div id="yt1" style="display:none"></div>
+<div id="yt2" style="display:none"></div>
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
-const canvas = document.getElementById("garden");
-const ctx = canvas.getContext("2d");
-canvas.width = innerWidth;
-canvas.height = innerHeight;
+const canvas=document.getElementById("garden");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;
+canvas.height=innerHeight;
 
-let fallingPetals = [];
-let autoI = null;
-let p1, p2, played1 = false, played2 = false;
+let petals=[],autoI=null;
+let p1,p2,played1=false,played2=false;
 
-/* MUSIC */
 function onYouTubeIframeAPIReady(){
-  p1 = new YT.Player("yt1",{videoId:"jJx5GJQDqZE",playerVars:{loop:1,playlist:"jJx5GJQDqZE"}});
-  p2 = new YT.Player("yt2",{videoId:"iv1Kgdf5swk",playerVars:{loop:1,playlist:"iv1Kgdf5swk"}});
+  p1=new YT.Player("yt1",{videoId:"jJx5GJQDqZE",playerVars:{loop:1,playlist:"jJx5GJQDqZE"}});
+  p2=new YT.Player("yt2",{videoId:"iv1Kgdf5swk",playerVars:{loop:1,playlist:"iv1Kgdf5swk"}});
 }
 
-/* START FLOWERS */
 function startFlowers(){
   intro.style.display="none";
   flowerText.style.display="block";
@@ -225,123 +227,89 @@ function startFlowers(){
   canvas.style.display="block";
   if(!played1){p1.playVideo();played1=true}
   animate();
-
-  // Play video after 5 seconds
-  setTimeout(showVideo, 5000);
+  setTimeout(showVideo,5000);
 }
 
-/* VIDEO LOGIC */
 function showVideo(){
-  const box = document.getElementById("videoBox");
-  const vid = document.getElementById("danceVideo");
+  const box=document.getElementById("videoBox");
+  const vid=document.getElementById("danceVideo");
+  const tap=document.getElementById("videoTap");
   box.style.display="flex";
-  vid.play();
-  vid.onended = ()=>{
-    box.style.display="none";
+  tap.onclick=()=>{
+    tap.style.display="none";
+    vid.currentTime=0;
+    vid.play();
   };
+  vid.onended=()=>box.style.display="none";
 }
 
-/* START FLY */
 function startFly(){
   intro.style.display="none";
   planeScene.style.display="block";
   if(!played2){p2.playVideo();played2=true}
-  if(navigator.vibrate) navigator.vibrate([200,100,200]);
   setTimeout(()=>{
     planeScene.style.display="none";
     final.style.display="flex";
-    if(navigator.vibrate) navigator.vibrate(300);
   },12000);
 }
 
-/* FLOWERS */
-canvas.onclick = e => drawFlower(e.clientX, e.clientY);
+canvas.onclick=e=>drawFlower(e.clientX,e.clientY);
 
 function drawFlower(x,y){
-  const petalColors = [
-    ["#ff9a9e","#fad0c4"],
-    ["#fbc2eb","#a6c1ee"],
-    ["#fff1a8","#ffd166"]
-  ];
-  const [c1,c2] = petalColors[Math.floor(Math.random()*petalColors.length)];
-  let scale = 0;
-
-  function grow(){
-    scale += 0.04;
-
+  const c=[["#ff9a9e","#fad0c4"],["#fbc2eb","#a6c1ee"],["#fff1a8","#ffd166"]];
+  const [c1,c2]=c[Math.floor(Math.random()*c.length)];
+  let s=0;
+  function g(){
+    s+=.04;
     ctx.strokeStyle="#2e7d32";
-    ctx.lineWidth=2;
     ctx.beginPath();
     ctx.moveTo(x,y);
     ctx.lineTo(x,y+70);
     ctx.stroke();
-
     for(let i=0;i<10;i++){
-      const g = ctx.createRadialGradient(x,y,2,x,y,26);
-      g.addColorStop(0,c1);
-      g.addColorStop(1,c2);
-      ctx.fillStyle=g;
+      const gr=ctx.createRadialGradient(x,y,2,x,y,26);
+      gr.addColorStop(0,c1);gr.addColorStop(1,c2);
+      ctx.fillStyle=gr;
       ctx.beginPath();
-      ctx.ellipse(x,y,10*scale,24*scale,(Math.PI/5)*i,0,Math.PI*2);
+      ctx.ellipse(x,y,10*s,24*s,(Math.PI/5)*i,0,Math.PI*2);
       ctx.fill();
     }
-
-    if(scale<1) requestAnimationFrame(grow);
-  }
-  grow();
+    if(s<1)requestAnimationFrame(g);
+  } g();
 }
 
-/* PETALS */
-function spawnPetal(){
-  fallingPetals.push({
-    x:Math.random()*canvas.width,
-    y:-20,
-    size:4+Math.random()*4,
-    speed:0.6+Math.random(),
-    drift:(Math.random()-0.5)*0.5,
-    rot:Math.random()*Math.PI
-  });
-}
-setInterval(spawnPetal,500);
+setInterval(()=>petals.push({
+  x:Math.random()*canvas.width,
+  y:-20,size:4+Math.random()*4,
+  v:0.6+Math.random(),
+  d:(Math.random()-.5)*.5,r:Math.random()*Math.PI
+}),500);
 
 function animate(){
-  fallingPetals.forEach(p=>{
+  petals.forEach(p=>{
     ctx.save();
     ctx.translate(p.x,p.y);
-    ctx.rotate(p.rot);
-    ctx.fillStyle="rgba(255,182,193,0.8)";
+    ctx.rotate(p.r);
+    ctx.fillStyle="rgba(255,182,193,.8)";
     ctx.beginPath();
     ctx.ellipse(0,0,p.size,p.size/1.6,0,0,Math.PI*2);
     ctx.fill();
     ctx.restore();
-
-    p.y += p.speed;
-    p.x += p.drift;
-    p.rot += 0.01;
+    p.y+=p.v;p.x+=p.d;p.r+=.01;
   });
-  fallingPetals = fallingPetals.filter(p=>p.y<canvas.height+30);
+  petals=petals.filter(p=>p.y<canvas.height+30);
   requestAnimationFrame(animate);
 }
 
-/* AUTO BLOOM */
 function autoBloom(){
-  if(autoI) return;
-  autoI = setInterval(()=>{
-    drawFlower(
-      Math.random()*canvas.width,
-      Math.random()*canvas.height*0.7
-    );
-  },350);
+  if(autoI)return;
+  autoI=setInterval(()=>drawFlower(Math.random()*canvas.width,Math.random()*canvas.height*.7),350);
 }
-
-/* CLEAR */
 function clearGarden(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  fallingPetals=[];
-  clearInterval(autoI);
-  autoI=null;
+  petals=[];
+  clearInterval(autoI);autoI=null;
 }
-
 onresize=()=>{
   canvas.width=innerWidth;
   canvas.height=innerHeight;
