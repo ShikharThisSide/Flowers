@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Flower Garden for You</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:"Poppins",sans-serif;
+}
+
+body{
+  background:black;
+  overflow:hidden;
+  color:white;
+}
+
+h1{
+  position:fixed;
+  top:20px;
+  left:20px;
+  font-size:18px;
+}
+
+.center{
+  position:fixed;
+  top:45%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+  pointer-events:none;
+}
+
+.center h2{
+  font-size:44px;
+  background:linear-gradient(45deg,#ff9aa2,#ff5da2);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+canvas{
+  position:fixed;
+  inset:0;
+}
+
+.controls{
+  position:fixed;
+  bottom:30px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:16px;
+}
+
+button{
+  background:#4b5f56;
+  border:none;
+  color:white;
+  padding:12px 22px;
+  border-radius:30px;
+  cursor:pointer;
+  font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🌸 Flower Garden for You</h1>
+
+<div class="center">
+  <p>Click Anywhere to</p>
+  <h2>Plant Flowers</h2>
+  <span>✨ or turn on Auto Bloom</span>
+</div>
+
+<canvas id="garden"></canvas>
+
+<div class="controls">
+  <button id="clear">🧹 Clear Garden</button>
+  <button id="auto">✨ Auto Bloom</button>
+</div>
+
+<!-- Background Music -->
+<audio id="music" loop>
+  <source src="https://cdn.pixabay.com/audio/2023/03/13/audio_8d5c2b36f2.mp3">
+</audio>
+
+<script>
+const canvas = document.getElementById("garden");
+const ctx = canvas.getContext("2d");
+const music = document.getElementById("music");
+
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+const colors = ["#ff6b81","#ffd93d","#ffffff"];
+let autoBloom = null;
+let musicStarted = false;
+
+function bloomFlower(x,y){
+  const color = colors[Math.floor(Math.random()*colors.length)];
+  let scale = 0;
+
+  function animate(){
+    scale += 0.05;
+    if(scale >= 1) scale = 1;
+
+    // stem
+    ctx.strokeStyle = "green";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x,y);
+    ctx.lineTo(x,y+60);
+    ctx.stroke();
+
+    // glow
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 20;
+
+    // petals
+    for(let i=0;i<6;i++){
+      ctx.beginPath();
+      ctx.fillStyle = color;
+      ctx.ellipse(
+        x,
+        y,
+        10*scale,
+        22*scale,
+        Math.PI/3*i,
+        0,
+        Math.PI*2
+      );
+      ctx.fill();
+    }
+
+    ctx.shadowBlur = 0;
+
+    if(scale < 1) requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+canvas.addEventListener("click",e=>{
+  if(!musicStarted){
+    music.play();
+    musicStarted = true;
+  }
+  bloomFlower(e.clientX,e.clientY);
+});
+
+document.getElementById("auto").onclick=()=>{
+  if(autoBloom) return;
+  if(!musicStarted){
+    music.play();
+    musicStarted = true;
+  }
+  autoBloom = setInterval(()=>{
+    bloomFlower(
+      Math.random()*canvas.width,
+      Math.random()*canvas.height
+    );
+  },250);
+};
+
+document.getElementById("clear").onclick=()=>{
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  clearInterval(autoBloom);
+  autoBloom = null;
+};
+
+onresize=()=>{
+  canvas.width=innerWidth;
+  canvas.height=innerHeight;
+};
+</script>
+
+</body>
+</html>
