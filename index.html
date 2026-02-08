@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>For Harshita 💗</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif}
+body{
+  background:#000;
+  overflow:hidden;
+  color:#fff;
+}
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:radial-gradient(circle,rgba(255,170,120,.08),rgba(0,0,0,.9));
+  animation:flicker 4s infinite;
+  pointer-events:none;
+}
+@keyframes flicker{0%,100%{opacity:.9}50%{opacity:1}}
+
+h1{position:fixed;top:20px;left:20px;font-size:18px}
+
+.center{
+  position:fixed;
+  top:45%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+  pointer-events:none;
+}
+.center h2{
+  font-size:34px;
+  line-height:1.4;
+  background:linear-gradient(45deg,#ffb6c1,#ff5da2);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:heart 2.2s infinite;
+}
+@keyframes heart{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.center p{opacity:.75;margin-bottom:8px}
+
+canvas{position:fixed;inset:0}
+
+.controls{
+  position:fixed;
+  bottom:30px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:16px;
+}
+button{
+  background:#4b5f56;
+  border:none;
+  color:#fff;
+  padding:12px 22px;
+  border-radius:30px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🕯️ Flower Garden</h1>
+
+<div class="center">
+  <p>Tap anywhere to begin</p>
+  <h2>
+    Harshita,<br>
+    these flowers are for you<br>
+    my lovely mumma 💗
+  </h2>
+</div>
+
+<canvas id="c"></canvas>
+
+<div class="controls">
+  <button onclick="clearGarden()">🧹 Clear</button>
+  <button onclick="autoBloom()">✨ Auto Bloom</button>
+</div>
+
+<div id="player" style="display:none"></div>
+<script src="https://www.youtube.com/iframe_api"></script>
+
+<script>
+const c=document.getElementById("c"),x=c.getContext("2d");
+c.width=innerWidth;c.height=innerHeight;
+
+let petals=[],auto=null,player,started=false;
+const flowers=[["#ff7eb3","#ff4d6d"],["#fff1a8","#ffd166"],["#fff","#eaeaea"]];
+
+function onYouTubeIframeAPIReady(){
+  player=new YT.Player("player",{videoId:"jJx5GJQDqZE",
+    playerVars:{controls:0,loop:1,playlist:"jJx5GJQDqZE"}
+  });
+}
+function music(){
+  if(player&&!started){player.playVideo();started=true}
+}
+
+function petal(){
+  petals.push({x:Math.random()*c.width,y:-10,s:5+Math.random()*6,v:.5+Math.random(),d:(Math.random()-.5)*.5,r:Math.random()});
+}
+setInterval(petal,500);
+
+function drawPetals(){
+  petals.forEach(p=>{
+    x.save();
+    x.translate(p.x,p.y);
+    x.rotate(p.r);
+    x.fillStyle="rgba(255,182,193,.7)";
+    x.beginPath();
+    x.ellipse(0,0,p.s,p.s/2,0,0,Math.PI*2);
+    x.fill();
+    x.restore();
+    p.y+=p.v;p.x+=p.d;p.r+=.01;
+  });
+  petals=petals.filter(p=>p.y<c.height+20);
+}
+
+function flower(px,py){
+  const [a,b]=flowers[Math.floor(Math.random()*flowers.length)];
+  let s=0;
+  (function grow(){
+    s+=.04;
+    x.strokeStyle="#2e7d32";
+    x.beginPath();
+    x.moveTo(px,py);
+    x.quadraticCurveTo(px+10,py+40,px,py+80);
+    x.stroke();
+    x.shadowBlur=25;x.shadowColor=a;
+    for(let i=0;i<8;i++){
+      const g=x.createRadialGradient(px,py,2,px,py,30);
+      g.addColorStop(0,a);g.addColorStop(1,b);
+      x.fillStyle=g;
+      x.beginPath();
+      x.ellipse(px,py,12*s,26*s,(Math.PI/4)*i,0,Math.PI*2);
+      x.fill();
+    }
+    x.shadowBlur=0;
+    if(s<1)requestAnimationFrame(grow);
+  })();
+}
+
+c.onclick=e=>{music();flower(e.clientX,e.clientY)};
+function autoBloom(){
+  music();
+  if(auto)return;
+  auto=setInterval(()=>flower(Math.random()*c.width,Math.random()*c.height*.8),300);
+}
+function clearGarden(){
+  x.clearRect(0,0,c.width,c.height);
+  petals=[];clearInterval(auto);auto=null;
+}
+(function loop(){drawPetals();requestAnimationFrame(loop)})();
+onresize=()=>{c.width=innerWidth;c.height=innerHeight};
+</script>
+
+</body>
+</html>
