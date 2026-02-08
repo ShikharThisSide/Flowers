@@ -6,6 +6,7 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif}
+
 body{
   background:#000;
   overflow:hidden;
@@ -17,15 +18,16 @@ body::after{
   content:"";
   position:fixed;
   inset:0;
-  background:radial-gradient(circle,rgba(255,180,130,.12),rgba(0,0,0,.9));
+  background:radial-gradient(circle,rgba(255,180,130,.14),rgba(0,0,0,.9));
   animation:flicker 4s infinite;
   pointer-events:none;
 }
-@keyframes flicker{0%,100%{opacity:.9}50%{opacity:1}}
+@keyframes flicker{
+  0%,100%{opacity:.9}
+  50%{opacity:1}
+}
 
-canvas{position:fixed;inset:0}
-
-/* Center cinematic text */
+/* Intro container */
 .center{
   position:fixed;
   inset:0;
@@ -37,84 +39,75 @@ canvas{position:fixed;inset:0}
   z-index:5;
 }
 
+/* Cinematic text */
 .glow-text{
   font-size:32px;
-  line-height:1.4;
+  line-height:1.45;
   color:#ffb6c1;
   text-shadow:
-    0 0 10px rgba(255,182,193,.6),
-    0 0 30px rgba(255,105,180,.4);
-  animation:pulse 2.2s infinite;
+    0 0 10px rgba(255,182,193,.7),
+    0 0 35px rgba(255,105,180,.45);
+  animation:heartbeat 2.2s infinite;
 }
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+@keyframes heartbeat{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.05)}
+}
 
 .options{
-  margin-top:25px;
+  margin-top:28px;
   display:flex;
   gap:18px;
 }
 
 .option-btn{
-  background:rgba(255,182,193,.15);
-  border:1px solid rgba(255,182,193,.4);
+  background:rgba(255,182,193,.18);
+  border:1px solid rgba(255,182,193,.5);
   color:#fff;
   padding:14px 26px;
   border-radius:40px;
   font-size:16px;
   cursor:pointer;
   backdrop-filter:blur(6px);
-  transition:.3s;
+  transition:.35s;
 }
 .option-btn:hover{
-  background:rgba(255,182,193,.35);
-  transform:translateY(-2px);
+  background:rgba(255,182,193,.45);
+  transform:translateY(-3px);
 }
 
-/* Cute doll peek */
-.doll{
+/* REAL IMAGE PEEK */
+.peek{
   position:fixed;
-  bottom:0;
-  right:10%;
-  width:140px;
-  height:200px;
-  background:radial-gradient(circle at top,#ffd1dc,#ff9aa2);
-  border-radius:70px 70px 30px 30px;
-  animation:peek 3s infinite;
+  bottom:-40px;
+  right:8%;
+  width:220px;
+  height:300px;
+  background:url("mumma.png") center/cover no-repeat;
+  border-radius:30px;
+  box-shadow:
+    0 0 30px rgba(255,182,193,.5),
+    inset 0 -60px 60px rgba(0,0,0,.6);
+  animation:peek 3.5s infinite;
   z-index:3;
 }
 @keyframes peek{
-  0%,100%{transform:translateY(120px)}
+  0%,100%{transform:translateY(140px)}
   50%{transform:translateY(0)}
 }
-.doll::before{
-  content:"";
-  position:absolute;
-  top:50px;
-  left:35px;
-  width:20px;
-  height:20px;
-  background:#000;
-  border-radius:50%;
-  box-shadow:40px 0 #000;
-}
-.doll::after{
-  content:"";
-  position:absolute;
-  top:85px;
-  left:45px;
-  width:40px;
-  height:20px;
-  border-bottom:4px solid #000;
-  border-radius:50%;
-}
 
-/* Hide garden initially */
-#gardenScene{display:none}
+/* Garden canvas */
+canvas{
+  position:fixed;
+  inset:0;
+  display:none;
+}
 </style>
 </head>
 
 <body>
 
+<!-- INTRO -->
 <div class="center" id="intro">
   <div class="glow-text">
     Hii mummdie 🥺<br>
@@ -129,58 +122,79 @@ canvas{position:fixed;inset:0}
   </div>
 </div>
 
-<div class="doll"></div>
+<div class="peek"></div>
 
-<canvas id="gardenScene"></canvas>
+<canvas id="garden"></canvas>
 
 <!-- YouTube Music -->
 <div id="player" style="display:none"></div>
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
-const canvas=document.getElementById("gardenScene");
+const canvas=document.getElementById("garden");
 const ctx=canvas.getContext("2d");
 canvas.width=innerWidth;
 canvas.height=innerHeight;
 
-let player,started=false,petals=[];
+let petals=[],player,started=false;
 
+/* YouTube */
 function onYouTubeIframeAPIReady(){
   player=new YT.Player("player",{
     videoId:"jJx5GJQDqZE",
-    playerVars:{controls:0,loop:1,playlist:"jJx5GJQDqZE"}
+    playerVars:{
+      controls:0,
+      loop:1,
+      playlist:"jJx5GJQDqZE"
+    }
   });
 }
 function playMusic(){
-  if(player&&!started){player.playVideo();started=true}
+  if(player&&!started){
+    player.playVideo();
+    started=true;
+  }
 }
 
+/* Start garden */
 function startGarden(){
   document.getElementById("intro").style.display="none";
-  playMusic();
+  document.querySelector(".peek").style.display="none";
   canvas.style.display="block";
+  playMusic();
   loop();
 }
 
-function petal(){
-  petals.push({x:Math.random()*canvas.width,y:-10,s:5+Math.random()*6,v:.6+Math.random(),d:(Math.random()-.5)*.4});
+/* Floating petals */
+function spawnPetal(){
+  petals.push({
+    x:Math.random()*canvas.width,
+    y:-10,
+    s:5+Math.random()*7,
+    v:.6+Math.random(),
+    d:(Math.random()-.5)*.5
+  });
 }
-setInterval(petal,500);
+setInterval(spawnPetal,500);
 
 function loop(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   petals.forEach(p=>{
-    ctx.fillStyle="rgba(255,182,193,.7)";
+    ctx.fillStyle="rgba(255,182,193,.75)";
     ctx.beginPath();
     ctx.ellipse(p.x,p.y,p.s,p.s/2,0,0,Math.PI*2);
     ctx.fill();
-    p.y+=p.v;p.x+=p.d;
+    p.y+=p.v;
+    p.x+=p.d;
   });
-  petals=petals.filter(p=>p.y<canvas.height+20);
+  petals=petals.filter(p=>p.y<canvas.height+30);
   requestAnimationFrame(loop);
 }
 
-onresize=()=>{canvas.width=innerWidth;canvas.height=innerHeight};
+onresize=()=>{
+  canvas.width=innerWidth;
+  canvas.height=innerHeight;
+};
 </script>
 
 </body>
